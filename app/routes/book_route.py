@@ -9,10 +9,10 @@ from flask import Blueprint
 from app.models.book import books
 
 books_bp = Blueprint("books", __name__)
-# books_bp = Blueprint("books_bp", __name__, url_prefix="/books") # I can specify an endpoint as URL_Prefix
+books_bp = Blueprint("books_bp", __name__, url_prefix="/books") # I can specify an endpoint as URL_Prefix
 
-@books_bp.get("/books")  # if I have specified endpoint on line 12 then no need for /books here
-# @books_bp.get("")
+# @books_bp.get("/books")  
+@books_bp.get("")  # if I have specified endpoint on line 12 then no need for /books here
 def get_books():
     books_response = []
 
