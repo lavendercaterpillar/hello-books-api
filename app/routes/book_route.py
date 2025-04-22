@@ -8,7 +8,7 @@
 from flask import Blueprint
 from app.models.book import books
 
-# books_bp = Blueprint("books", __name__)
+# books_bp = Blueprint("books_bp", __name__)
 books_bp = Blueprint("books_bp", __name__, url_prefix="/books") # I can specify an endpoint as URL_Prefix
 
 # @books_bp.get("/books")  # if I have specified endpoint on line 12 then no need for /books here
@@ -31,10 +31,14 @@ def get_books():
     
     return books_response
 
-
+# second endpoint for one book
 @books_bp.get("/<book_id>") # now with this endpoint we need to use line 12 instead of line 11
 def get_one_book(book_id):
-    book_id = int(book_id)
+    try:
+        book_id = int(book_id)
+    except:
+        return {"message": f"book {book_id} invalid"}, 400 # handling invalid book_id
+
     for book in books:
         if book.id == book_id:
             return {
@@ -42,3 +46,5 @@ def get_one_book(book_id):
                 "title": book.title,
                 "description": book.description,
             }
+    
+    return {"message": f"book {book_id} not found"}, 404  # handling not found book_id
