@@ -5,7 +5,9 @@
     Register our blueprint with our app
     Write a route to get all the book records from our "database"
 '''
-from flask import Blueprint, abort, make_response  # additional imports for refactoring
+# from flask import Blueprint, abort, make_response  # additional imports for refactoring option 2
+from flask import Blueprint
+from app.routes.helper import validate_book # additional import for refatoring option 3
 from app.models.book import books
 
 # books_bp = Blueprint("books_bp", __name__)
@@ -52,7 +54,7 @@ def get_one_book(book_id):
     # return {"message": f"book {book_id} not found"}, 404  # handling not found book_id
 
 
-    # Option 2: Refactoring
+    # Refactoring
     book = validate_book(book_id)
 
     return {
@@ -62,17 +64,17 @@ def get_one_book(book_id):
     }
     
 
+## Option 2: Refactoring and validating in the same routeing file
+# def validate_book(book_id):
+#     try:
+#         book_id = int(book_id)
+#     except:
+#         response = {"message": f"book {book_id} invalid"}
+#         abort(make_response(response, 400))
 
-def validate_book(book_id):
-    try:
-        book_id = int(book_id)
-    except:
-        response = {"message": f"book {book_id} invalid"}
-        abort(make_response(response, 400))
+#     for book in books:
+#         if book.id == book_id:
+#             return book
 
-    for book in books:
-        if book.id == book_id:
-            return book
-
-    response = {"message": f"book {book_id} not found"}
-    abort(make_response(response, 404))
+#     response = {"message": f"book {book_id} not found"}
+#     abort(make_response(response, 404))
