@@ -1,74 +1,25 @@
-from flask import Blueprint, abort, make_response  # additional imports for refactoring option 2
-# from flask import Blueprint
-# from app.routes.helper import validate_book # additional import for refatoring option 3
-# from app.models.book import books
+from flask import Blueprint, abort, make_response, request  # additional imports for refactoring option 2
+from app.models.book import Book
+from ..db import db
 
 # books_bp = Blueprint("books_bp", __name__)
-books_bp = Blueprint("books_bp", __name__, url_prefix="/books") # I can specify an endpoint as URL_Prefix
-
-# # Hardcoded Blueprints
-# # @books_bp.get("/books")  # if I have specified endpoint on line 12 then no need for /books here
-# @books_bp.get("")
-# def get_books():
-    
-#     books_response = []
-
-#     for book in books:
-#         books_response.append(
-#             {
-#                 "id": book.id,
-#                 "title": book.title,
-#                 "description": book.description
-#             })
-#         # books_response.append(dict(   # Another way to define a dict
-#         #     id = book.id,
-#         #     title = book.title,
-#         #     description = book.description
-#         # ))
-    
-#     return books_response
-
-# # second endpoint for one book
-# @books_bp.get("/<book_id>") # now with this endpoint we need to use line 12 instead of line 11
-# def get_one_book(book_id):
-
-#     # Option 1: direct Error Handling
-#     try:
-#         book_id = int(book_id)
-#     except:
-#         return {"message": f"book {book_id} invalid"}, 400 # hardcoded handling invalid book_id
-
-#     for book in books:
-#         if book.id == book_id:
-#             return {
-#                 "id": book.id,
-#                 "title": book.title,
-#                 "description": book.description,
-#             }
-#     return {"message": f"book {book_id} not found"}, 404  # hardcoded handling not found book_id
+books_bp = Blueprint("books_bp", __name__, url_prefix="/books") 
 
 
-#     # # Refactoring
-#     # book = validate_book(book_id)  # Option 3 Error handling
+# Creating a POST request
+@books_bp.post("")
+def create_book():
+    request_body = request.get_json()  # JSON is just a string, needs to convert it back into python data types
+    title = request_body["title"]
+    description = request_body["description"]
 
-#     # return {
-#     #     "id": book.id,
-#     #     "title": book.title,
-#     #     "description": book.description,
-#     # }
-    
+    new_book = Book(title=title, description=description)
+    db.session.add(new_book)
+    db.session.commit()
 
-# # Option 2: Refactoring and validating in the same routeing file
-# def validate_book(book_id):
-#     try:
-#         book_id = int(book_id)
-#     except:
-#         response = {"message": f"book {book_id} invalid"}
-#         abort(make_response(response, 400))
-
-#     for book in books:
-#         if book.id == book_id:
-#             return book
-
-#     response = {"message": f"book {book_id} not found"}
-#     abort(make_response(response, 404))
+    response = {
+        "id": new_book.id,
+        "title": new_book.title,
+        "description": new_book.description,
+    }
+    return response, 201
