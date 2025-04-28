@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, make_response, request  # additional imports for refactoring option 2
+from flask import Blueprint, Response, request  # additional imports for refactoring option 2
 from app.models.book import Book
 from ..db import db
 from .helper import validate_book
@@ -75,3 +75,16 @@ def get_one_book(book_id):
         "title": book.title,
         "description": book.description,
     }
+
+
+# Creatign a PUT request
+@books_bp.put("/<book_id>")
+def update_book(book_id):
+    book = validate_book(book_id)
+    request_body = request.get_json()
+
+    book.title = request_body["title"]
+    book.description = request_body["description"]
+    db.session.commit()
+
+    return Response(status=204, mimetype="application/json")
