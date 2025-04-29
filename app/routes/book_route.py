@@ -33,17 +33,58 @@ def create_book():
 @books_bp.get("")
 def get_all_books():
 
+    query = db.select(Book).order_by(Book.id)
+    books = db.session.scalars(query) 
+
+    books_response = []
+    for book in books:
+        books_response.append(
+            {
+                "id": book.id,
+                "title": book.title,
+                "description": book.description
+            }
+        )
+    return books_response
+
+
+# Creating a GET request for retrieving with query params
+@books_bp.get("")
+def get_all_books():
+
     title_param = request.args.get("title") # this will look up the query params "title" using request.args
     if title_param:
         ## code that builds a query to filter by "title":exact match
         # query = db.select(Book).where(Book.title == title_param).order_by(Book.id)
+        
         # code that filter partial string "title":partial match
         query = db.select(Book).where(Book.title.ilike(f"%{title_param}%")).order_by(Book.id)
     else:
         query = db.select(Book).order_by(Book.id)
 
+    # Similarly with Description
+    description_param = request.args.get("description")
+    if description_param:
+        query = db.select(Book).where(Book.description.ilike(f"%{description_param}%"))
+
     books = db.session.scalars(query) 
 
+    # or the lines below -----------------------------
+    title_param = request.args.get("title")
+    description_param = request.args.get("description")
+
+    query = db.select(Book)
+
+    title_param = request.args.get("title")
+    if title_param:
+        query = query.where(Book.title.ilike(f"%{title_param}%"))
+
+    description_param = request.args.get("description")
+    if description_param:
+        query = query.where(Book.description.ilike(f"%{description_param}%"))
+
+    query = query.order_by(Book.id)
+    # -----------------------------
     books_response = []
     for book in books:
         books_response.append(
