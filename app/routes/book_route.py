@@ -32,12 +32,17 @@ def create_book():
 # Creating a GET request for retrieving ALL books
 @books_bp.get("")
 def get_all_books():
-    # query = db.select(Book) # similar to SELECT in SQL
-    query = db.select(Book).order_by(Book.id)  # sorted in a particular order by calling order_by  
-    books = db.session.scalars(query) # This method returns the query which is a list of instances of Book.
 
-    # We could also write the lines above as:
-    # books = db.session.execute(query).scalars()
+    title_param = request.args.get("title") # this will look up the query params "title" using request.args
+    if title_param:
+        ## code that builds a query to filter by "title":exact match
+        # query = db.select(Book).where(Book.title == title_param).order_by(Book.id)
+        # code that filter partial string "title":partial match
+        query = db.select(Book).where(Book.title.ilike(f"%{title_param}%")).order_by(Book.id)
+    else:
+        query = db.select(Book).order_by(Book.id)
+
+    books = db.session.scalars(query) 
 
     books_response = []
     for book in books:
@@ -49,20 +54,6 @@ def get_all_books():
             }
         )
     return books_response
-
-
-# # Creating a GET request to retrieve 1 book
-# @books_bp.get("/<book_id>")  # Place holder for book_id endpoint in the GET request
-# def get_one_book(book_id):
-#     # Similar to SELECT <> WHERE <> in SQL
-#     query = db.select(Book).where(Book.id == book_id)
-#     book = db.session.scalar(query) # returns based on the above query (book_id)
-
-#     return {
-#         "id": book.id,
-#         "title": book.title,
-#         "description": book.description
-#     }
 
 
 # Creating a GET request to retrieve 1 book with Validation
@@ -77,7 +68,7 @@ def get_one_book(book_id):
     }
 
 
-# Creatign a PUT request
+# Creating a PUT request
 @books_bp.put("/<book_id>")
 def update_book(book_id):
     book = validate_book(book_id)
