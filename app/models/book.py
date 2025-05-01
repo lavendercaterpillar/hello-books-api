@@ -21,3 +21,13 @@ class Book(db.Model):
     def from_dict(cls, book_data):
         new_book_ins = Book(title=book_data["title"], description=book_data["description"])
         return new_book_ins
+    
+    def update_from_dict(self, book_data):
+        if "title" in book_data:
+            self.title = book_data["title"]
+        if "description" in book_data:
+            self.description = book_data["description"]
+        
+        # The update_from_dict method typically does not return anything 
+        # it just updates the existing object in place. 
+        # So, it returns None by default (implicitly).

@@ -51,25 +51,6 @@ def create_book():
 # Creating a GET request for retrieving with query params
 @books_bp.get("")
 def get_all_books():
-
-    # title_param = request.args.get("title") # this will look up the query params "title" using request.args
-    # if title_param:
-    #     ## code that builds a query to filter by "title":exact match
-    #     # query = db.select(Book).where(Book.title == title_param).order_by(Book.id)
-        
-    #     # code that filter partial string "title":partial match
-    #     query = db.select(Book).where(Book.title.ilike(f"%{title_param}%")).order_by(Book.id)
-    # else:
-    #     query = db.select(Book).order_by(Book.id)
-
-    # # Similarly with Description
-    # description_param = request.args.get("description")
-    # if description_param:
-    #     query = db.select(Book).where(Book.description.ilike(f"%{description_param}%"))
-
-    # books = db.session.scalars(query) 
-
-    # or the lines below -------------------------------------
     query = db.select(Book)
 
     title_param = request.args.get("title")
@@ -105,9 +86,12 @@ def get_one_book(book_id):
 def update_book(book_id):
     book = validate_book(book_id)
     request_body = request.get_json()
-
+    
     book.title = request_body["title"]
     book.description = request_body["description"]
+    
+    # Two lines above can be replaced with a instance method
+    # book.update_from_dict(request_body)
 
     db.session.commit()
 
