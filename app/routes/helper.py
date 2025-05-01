@@ -3,7 +3,7 @@ from app.models.book import Book
 from ..db import db
 
 # database_backed model validation
-def validate_book(book_id):
+def validate_book(cls, book_id):
     try:
         book_id = int(book_id)
     except:
