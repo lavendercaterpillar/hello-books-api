@@ -2,35 +2,20 @@ from flask import abort,make_response
 from app.models.book import Book
 from ..db import db
 
-# database_backed model validation
-def validate_book(cls, book_id):
+# Refactoring validate_book() to include any input model
+def validate_model(cls, model_id):
     try:
-        book_id = int(book_id)
+        model_id = int(model_id)
     except:
-        response = {"message": f"book {book_id} invalid"}
+        response = {"message": f"model {model_id} invalid"}
         abort(make_response(response , 400))
 
-    query = db.select(Book).where(Book.id == book_id)
-    book = db.session.scalar(query)
+    query = db.select(cls).where(cls.id == model_id)
+    model = db.session.scalar(query)
     
-    if not book:
-        response = {"message": f"book {book_id} not found"}
+    if not model:
+        response = {"message": f"model {model_id} not found"}
         abort(make_response(response, 404))
 
-    return book
+    return model
 
-
-# Option 3: (Hardcode) Refactoring and validating in a helper file
-# def validate_book(book_id):
-#     try:
-#         book_id = int(book_id)
-#     except:
-#         response = {"message": f"book {book_id} invalid"}
-#         abort(make_response(response, 400))
-
-#     for book in books:
-#         if book.id == book_id:
-#             return book
-
-#     response = {"message": f"book {book_id} not found"}
-#     abort(make_response(response, 404))
