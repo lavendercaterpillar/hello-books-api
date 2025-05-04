@@ -18,6 +18,7 @@ def create_app(config=None):  # None, making the parameter optional
         # to override the app's default settings
         app.config.update(config)
 
+
     # Registering DB and migrate here
     db.init_app(app)
     migrate.init_app(app, db)

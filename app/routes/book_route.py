@@ -29,9 +29,9 @@ def create_book():
     return response, 201
 
 
-# Creating a GET request for retrieving ALL books
-@books_bp.get("")
-def get_all_books():
+# # Creating a GET request for retrieving ALL books
+# @books_bp.get("")
+# def get_all_books():
 
     query = db.select(Book).order_by(Book.id)
     books = db.session.scalars(query) 
@@ -74,7 +74,6 @@ def get_all_books():
     query = db.select(Book)
 
     title_param = request.args.get("title")
-    title_param = request.args.get("title")
     if title_param:
         query = query.where(Book.title.ilike(f"%{title_param}%"))
 
@@ -83,6 +82,8 @@ def get_all_books():
         query = query.where(Book.description.ilike(f"%{description_param}%"))
 
     query = query.order_by(Book.id)
+    books = db.session.scalars(query) 
+
     # -----------------------------
     books_response = []
     for book in books:
