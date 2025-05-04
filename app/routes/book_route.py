@@ -70,11 +70,10 @@ def get_all_books():
     books = db.session.scalars(query) 
 
     # or the lines below -----------------------------
-    title_param = request.args.get("title")
-    description_param = request.args.get("description")
 
     query = db.select(Book)
 
+    title_param = request.args.get("title")
     title_param = request.args.get("title")
     if title_param:
         query = query.where(Book.title.ilike(f"%{title_param}%"))
