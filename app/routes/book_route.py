@@ -70,8 +70,6 @@ def get_all_books():
     books = db.session.scalars(query) 
 
     # or the lines below -----------------------------
-    title_param = request.args.get("title")
-    description_param = request.args.get("description")
 
     query = db.select(Book)
 
