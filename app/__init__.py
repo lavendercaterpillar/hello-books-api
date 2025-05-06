@@ -1,7 +1,9 @@
 from flask import Flask
 from .db import db, migrate
 from .models import book 
+from .models import author 
 from .routes.book_route import books_bp
+from .routes.author_route import authors_bp
 import os
 
 def create_app(config=None):  # None, making the parameter optional
@@ -25,5 +27,6 @@ def create_app(config=None):  # None, making the parameter optional
 
     # Register Blueprints here
     app.register_blueprint(books_bp)
+    app.register_blueprint(authors_bp)
 
     return app
