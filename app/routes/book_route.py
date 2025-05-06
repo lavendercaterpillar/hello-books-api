@@ -1,4 +1,4 @@
-from flask import Blueprint, Response, request  # additional imports for refactoring option 2
+from flask import Blueprint, Response, make_response, request  # additional imports for refactoring option 2
 from app.models.book import Book
 from ..db import db
 from .helper import validate_model
@@ -28,29 +28,10 @@ def create_book():
     return response, 201
 
 
-# Creating a GET request for retrieving ALL books
-# @books_bp.get("")
-# def get_all_books():
-
-#     query = db.select(Book).order_by(Book.id)
-#     books = db.session.scalars(query) 
-
-#     books_response = []
-#     for book in books:
-#         # line to raftrefactor
-#         books_response.append(
-#             {
-#                 "id": book.id,
-#                 "title": book.title,
-#                 "description": book.description
-#             }
-#         )
-#     return books_response
-
-
-# Creating a GET request for retrieving with query params
+# Creating a GET request with query params
 @books_bp.get("")
 def get_all_books():
+
     query = db.select(Book)
 
     title_param = request.args.get("title")
@@ -61,9 +42,10 @@ def get_all_books():
     if description_param:
         query = query.where(Book.description.ilike(f"%{description_param}%"))
 
-    query = query.order_by(Book.id)
-    books = db.session.scalars(query) 
-    # -------------------------------------------------------
+    # query = query.order_by(Book.id)
+    # books = db.session.scalars(query)
+    books = db.session.scalars(query.order_by(Book.id))
+    
     books_response = []
     for book in books:
             # line to refactor
@@ -71,6 +53,10 @@ def get_all_books():
 
     return books_response
 
+# # Creating a GET all BROKEN for test
+# @books_bp.get("")
+# def get_all_books():
+#     return make_response("I'm a teapot!", 418)
 
 # Creating a GET request to retrieve 1 book with Validation
 @books_bp.get("/<book_id>")
