@@ -5,6 +5,7 @@ from flask.signals import request_finished
 from dotenv import load_dotenv
 import os
 
+#Before we can use our environment variables, we need to invoke the load_dotenv function that we imported.
 load_dotenv()
 
 @pytest.fixture
