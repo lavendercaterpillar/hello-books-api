@@ -58,6 +58,7 @@ def get_all_books():
 # def get_all_books():
 #     return make_response("I'm a teapot!", 418)
 
+
 # Creating a GET request to retrieve 1 book with Validation
 @books_bp.get("/<book_id>")
 def get_one_book(book_id):
