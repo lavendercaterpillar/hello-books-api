@@ -11,3 +11,4 @@ def test_get_all_books_with_no_records(client):
     assert response.status_code == 200
     assert response_body == []
 
+
