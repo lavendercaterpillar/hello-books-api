@@ -19,13 +19,21 @@ def create_book():
 
     new_book = Book.from_dict(request_body)
 
-    # lines 18 and 19 are responsible for saving the new book to the database.
     db.session.add(new_book) 
     db.session.commit() 
 
     # We need to convert response body back to JSON
     response = new_book.to_dict()
     return response, 201
+
+# ********************************* 
+#       REFACTORING FROM FLASKY
+# *********************************
+    # try:
+    #     new_cat = Cat.from_dict(request_body)
+    # except KeyError as e:
+    #     response = {"message": f"Invalid request: missing {e.args[0]}"}
+    #     abort(make_response(response, 400))
 
 
 # Creating a GET request with query params

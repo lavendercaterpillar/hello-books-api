@@ -5,6 +5,7 @@ from flask.signals import request_finished
 from dotenv import load_dotenv
 import os
 from app.models.book import Book
+from app.models.author import Author
 
 
 #Before we can use our environment variables, we need to invoke the load_dotenv function that we imported.
@@ -50,4 +51,16 @@ def two_saved_books(app): # This fixture needs to request the use of the app fix
     # db.session.add(mountain_book)
     db.session.commit()  # commits and saves our books to the database
 
+
+@pytest.fixture
+def two_saved_authors(app): 
+    # Arrange
+    ocean_author = Author(title="Ocean author")
+    mountain_author = Author(title="Mountain author")
+
+    db.session.add_all([ocean_author, mountain_author]) 
+    # Alternatively, we could do
+    # db.session.add(ocean_author)
+    # db.session.add(mountain_author)
+    db.session.commit() 
 

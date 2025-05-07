@@ -1,9 +1,8 @@
 from flask import Flask
 from .db import db, migrate
-from .models import book 
-from .models import author 
-from .routes.book_route import books_bp
-from .routes.author_route import authors_bp
+from .models import book, author
+from .routes.book_route import books_bp # # change it ... import bp as books_bp
+from .routes.author_route import authors_bp # change it ... import bp as authors_bp
 import os
 
 def create_app(config=None):  # None, making the parameter optional
