@@ -1,15 +1,21 @@
-from flask import Blueprint, Response, make_response, request
+from flask import Blueprint, Response, abort, make_response, request
 from app.models.author import Author
 from ..db import db
 from .helper import validate_model
 
-authors_bp = Blueprint("authors_bp", __name__, url_prefix="/authors") # check the prefix here it should be /id/book
+bp = Blueprint("authors_bp", __name__, url_prefix="/authors")
 
 # POST endpoint
-@authors_bp.post("")
+@bp.post("")
 def create_author():
     request_body = request.get_json()
-    new_author = Author.from_dict(request_body)
+    
+    try:
+        new_author = Author.from_dict(request_body)
+        
+    except KeyError as error:
+        response = {"message": f"Invalid request: missing {error.args[0]}"}
+        abort(make_response(response, 400))
 
 
     db.session.add(new_author) 
@@ -18,27 +24,41 @@ def create_author():
     response = new_author.to_dict()
     return response, 201
 
-# ********************************* 
-#       REFACTORING FROM FLASKY
-# *********************************
-# # @bp.post("")
-# def create_caretaker():
-#     request_body = request.get_json()
-#     # refactoring these lines later
-#     try:
-#         new_caretaker = Caretaker.from_dict(request_body)
-#     except KeyError as e:
-#         response = {"message": f"Invalid request: missing {e.args[0]}"}
-#         abort(make_response(response, 400))
-#     
-#     db.session.add(new_caretaker)
-#     db.session.commit()
-#     
-#     return new_caretaker.to_dict(), 201 
+
+# Due to one to many relationship we can
+# read a list of books related to one author (Parent model)
+# GET All Books from an Author
+@bp.get("/<author_id>/books")
+def get_books_by_author(author_id):
+    author = validate_model(Author, author_id)
+    response = [book.to_dict() for book in author.books]
+    return response
+
+
+# Due to "one to many" relationship we can
+# create a book with author:
+# POST request by parent model (with list of children models)
+@bp.post("/<author_id>/book")
+def create_book():
+    request_body = request.get_json()  
+    
+    try:
+        new_book = Book.from_dict(request_body)
+    except KeyError as e:
+        response = {"message": f"Invalid request: missing {e.args[0]}"}
+        abort(make_response(response, 400))
+
+    db.session.add(new_book) 
+    db.session.commit() 
+
+    # We need to convert response body back to JSON
+    response = new_book.to_dict()
+    return response, 201
+
 
 
 # GET all endpoint
-@authors_bp.get("")
+@bp.get("")
 def get_all_authors():
 
     query = db.select(Author)
@@ -57,24 +77,15 @@ def get_all_authors():
 
     return authors_response
 
-# ********************************* 
-#       REFACTORING FROM FLASKY
-# *********************************
-# @bp.get("/<id>/cats")
-# def get_all_caretaker_cats(id):
-#     caretaker = validate_model(Caretaker, id)
-#     cats = [cat.to_dict() for cat in caretaker.cats]
 
-#     return cats
-
-@authors_bp.get("/<author_id>")
+@bp.get("/<author_id>")
 def get_one_author(author_id):
     author = validate_model(Author, author_id)
 
     return author.to_dict()
 
 
-@authors_bp.put("/<author_id>")
+@bp.put("/<author_id>")
 def update_author(author_id):
     author = validate_model(Author, author_id)
     request_body = request.get_json()
@@ -86,7 +97,7 @@ def update_author(author_id):
     return Response(status=204, mimetype="application/json")
 
 
-@authors_bp.delete("/<author_id>")
+@bp.delete("/<author_id>")
 def delete_author(author_id):
     author = validate_model(Author, author_id)
     db.session.delete(author)

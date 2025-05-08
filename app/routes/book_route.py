@@ -1,22 +1,16 @@
-from flask import Blueprint, Response, make_response, request  # additional imports for refactoring option 2
+from flask import Blueprint, Response, abort, make_response, request  
 from app.models.book import Book
 from ..db import db
 from .helper import validate_model
 
-# books_bp = Blueprint("books_bp", __name__)
-books_bp = Blueprint("books_bp", __name__, url_prefix="/books") 
 
+bp = Blueprint("books_bp", __name__, url_prefix="/books") 
 
-# Creating a POST request
-@books_bp.post("")
+# POST request to /books
+@bp.post("")
 def create_book():
-    request_body = request.get_json()  # JSON is a string, needs to convert it back into python data types
+    request_body = request.get_json()  
     
-    # lines to raftrefactor
-    # title = request_body["title"]
-    # description = request_body["description"]
-    # new_book = Book(title=title, description=description)
-
     new_book = Book.from_dict(request_body)
 
     db.session.add(new_book) 
@@ -26,18 +20,9 @@ def create_book():
     response = new_book.to_dict()
     return response, 201
 
-# ********************************* 
-#       REFACTORING FROM FLASKY
-# *********************************
-    # try:
-    #     new_cat = Cat.from_dict(request_body)
-    # except KeyError as e:
-    #     response = {"message": f"Invalid request: missing {e.args[0]}"}
-    #     abort(make_response(response, 400))
 
-
-# Creating a GET request with query params
-@books_bp.get("")
+# GET request with query params
+@bp.get("")
 def get_all_books():
 
     query = db.select(Book)
@@ -56,19 +41,13 @@ def get_all_books():
     
     books_response = []
     for book in books:
-            # line to refactor
         books_response.append(book.to_dict())
 
     return books_response
 
-# # Creating a GET all BROKEN for test
-# @books_bp.get("")
-# def get_all_books():
-#     return make_response("I'm a teapot!", 418)
-
 
 # Creating a GET request to retrieve 1 book with Validation
-@books_bp.get("/<book_id>")
+@bp.get("/<book_id>")
 def get_one_book(book_id):
     book = validate_model(Book, book_id)
 
@@ -77,15 +56,11 @@ def get_one_book(book_id):
 
 
 # Creating a PUT request
-@books_bp.put("/<book_id>")
+@bp.put("/<book_id>")
 def update_book(book_id):
     book = validate_model(Book, book_id)
     request_body = request.get_json()
     
-    # book.title = request_body["title"]
-    # book.description = request_body["description"]
-    
-    # Two lines above can be replaced with a instance method
     book.update_from_dict(request_body)
 
     db.session.commit()
@@ -93,10 +68,11 @@ def update_book(book_id):
     return Response(status=204, mimetype="application/json")
 
 
-# Creatign a DELETE request
-@books_bp.delete("/<book_id>")
+# Creating a DELETE request
+@bp.delete("/<book_id>")
 def delete_book(book_id):
     book = validate_model(Book, book_id)
+
     db.session.delete(book)
     db.session.commit()
 

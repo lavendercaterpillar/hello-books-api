@@ -1,5 +1,4 @@
 from flask import abort,make_response
-from app.models.book import Book
 from ..db import db
 
 # Refactoring validate_book() to include any input model
