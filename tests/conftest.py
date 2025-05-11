@@ -55,8 +55,8 @@ def two_saved_books(app): # This fixture needs to request the use of the app fix
 @pytest.fixture
 def two_saved_authors(app): 
     # Arrange
-    ocean_author = Author(title="Ocean author")
-    mountain_author = Author(title="Mountain author")
+    ocean_author = Author(name="Ocean author")
+    mountain_author = Author(name="Mountain author")
 
     db.session.add_all([ocean_author, mountain_author]) 
     # Alternatively, we could do

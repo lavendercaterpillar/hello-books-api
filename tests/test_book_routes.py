@@ -126,15 +126,16 @@ def test_update_book_invalid_id(client, two_saved_books):
     assert response_body == {"message": "Book cat invalid"}
 
 
-@pytest.mark.skip()
+# @pytest.mark.skip()
 def test_delete_book(client, two_saved_books):
     # Act
     response = client.delete("/books/1")
-    response_body = response.get_json()
+    # response_body = response.get_json() # No resposne body acc. to our DEL endpoint
 
     # Assert
-    assert response.status_code == 200
-    assert response_body == "Book #1 successfully deleted"
+    assert response.status_code == 204
+    assert response.data == b''
+    # assert response_body == "Book 1 successfully deleted"
 
 
 # @pytest.mark.skip()

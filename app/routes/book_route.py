@@ -1,7 +1,7 @@
 from flask import Blueprint, Response, abort, make_response, request  
 from app.models.book import Book
 from ..db import db
-from .helper import validate_model
+from .helper import validate_model, create_model
 
 
 bp = Blueprint("books_bp", __name__, url_prefix="/books") 
@@ -11,15 +11,16 @@ bp = Blueprint("books_bp", __name__, url_prefix="/books")
 def create_book():
     request_body = request.get_json()  
     
-    new_book = Book.from_dict(request_body)
+    # new_book = Book.from_dict(request_body)
+    # db.session.add(new_book) 
+    # db.session.commit() 
+    # # We need to convert response body back to JSON
+    # response = new_book.to_dict()
+    # return response, 201
 
-    db.session.add(new_book) 
-    db.session.commit() 
-
-    # We need to convert response body back to JSON
-    response = new_book.to_dict()
-    return response, 201
-
+    # Refactoring lines above with create_model()
+    model_dict, status = create_model(Book, request_body)
+    return model_dict, status
 
 # GET request with query params
 @bp.get("")

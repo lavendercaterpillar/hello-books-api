@@ -35,9 +35,8 @@ def get_books_by_author(author_id):
     return response
 
 
-# Due to "one to many" relationship we can
-# create a book with author:
-# POST request by parent model (with list of children models)
+# Due to "one to many" relationship we can create a book with author:
+# POST request by parent model (with list of children models) better to say many to one instead
 @bp.post("/<author_id>/book")
 def create_book():
     request_body = request.get_json()  
